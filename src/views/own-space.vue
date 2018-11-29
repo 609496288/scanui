@@ -1,5 +1,5 @@
 <style lang="less">
-.own-space{
+    .own-space{
     &-btn-box{
         margin-bottom: 10px;
         button{
@@ -54,15 +54,16 @@
                     label-position="right"
                     :rules="inforValidate"
                 >
-                    <FormItem label="用户姓名：" prop="name">
+                    <FormItem label="用户姓名：" prop="realname">
                         <div style="display:inline-block;width:300px;">
-                            <Input v-model="userForm.name" ></Input>
+                            <Input v-model="userForm.realname" ></Input>
                         </div>
                     </FormItem>
-                    <FormItem label="用户手机：" prop="cellphone" >
+                    <FormItem label="用户手机：" prop="phone" >
                         <div style="display:inline-block;width:204px;">
-                            <Input v-model="userForm.cellphone" @on-keydown="hasChangePhone"></Input>
+                            <Input v-model="userForm.phone" @on-keydown="hasChangePhone"></Input>
                         </div>
+                        <!--
                         <div style="display:inline-block;position:relative;">
                             <Button @click="getIdentifyCode" :disabled="canGetIdentifyCode">{{ gettingIdentifyCodeBtnContent }}</Button>
                             <div class="own-space-input-identifycode-con" v-if="inputCodeVisible">
@@ -74,7 +75,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div>-->
                     </FormItem>
                     <FormItem label="公司：">
                         <span>{{ userForm.company }}</span>
@@ -87,7 +88,7 @@
                     </FormItem>
                     <div>
                         <Button type="text" style="width: 100px;" @click="cancelEditUserInfor">取消</Button>
-                        <Button type="primary" style="width: 100px;" :loading="save_loading" @click="saveEdit">保存</Button>
+                        <Button type="primary" style="width: 100px;" @click="userupdate">保存</Button>
                     </div>
                 </Form>
             </div>
@@ -107,15 +108,17 @@
             </Form>
             <div slot="footer">
                 <Button type="text" @click="cancelEditPass">取消</Button>
-                <Button type="primary" :loading="savePassLoading" @click="saveEditPass">保存</Button>
+                <Button type="primary" @click="userpwd">保存</Button>
             </div>
         </Modal>
     </div>
 </template>
 
 <script>
+import util from '@/libs/util.js';
+import CryptoJS from 'crypto-js'
 export default {
-    name: 'ownspace_index',
+    name: 'own-space',
     data () {
         const validePhone = (rule, value, callback) => {
             var re = /^1[0-9]{10}$/;
@@ -134,8 +137,8 @@ export default {
         };
         return {
             userForm: {
-                name: '',
-                cellphone: '',
+                realname: '',
+                phone: '',
                 company: '',
                 department: ''
             },
@@ -222,42 +225,56 @@ export default {
                 name: lastPageName
             });
         },
-        saveEdit () {
+        userupdate () {
+
             this.$refs['userForm'].validate((valid) => {
                 if (valid) {
-                    if (this.phoneHasChanged && this.userForm.cellphone !== this.initPhone) {  // 手机号码修改过了而且修改之后的手机号和原来的不一样
-                        if (this.hasGetIdentifyCode) { // 判断是否点了获取验证码
-                            if (this.identifyCodeRight) {  // 判断验证码是否正确
-                                this.saveInfoAjax();
-                            } else {
-                                this.$Message.error('验证码错误，请重新输入');
-                            }
-                        } else {
-                            this.$Message.warning('请先点击获取验证码');
-                        }
-                    } else {
-                        this.saveInfoAjax();
-                    }
+                  util.ajax({
+                        method:'POST',
+                        action:'userupdate',
+                        json: this.userForm
+                    }).then(res => {
+                        this.$Message.info('修改成功');
+                    }).catch(err => {
+                        this.$Message.error(err);
+                    });  
                 }
             });
         },
         cancelEditPass () {
             this.editPasswordModal = false;
         },
-        saveEditPass () {
-            this.$refs['editPasswordForm'].validate((valid) => {
-                if (valid) {
-                    this.savePassLoading = true;
-                    // you can write ajax request here
-                }
+        userpwd () {
+            let data = this.userForm;
+            data['oldpwd']=CryptoJS.SHA256(this.editPasswordForm.oldPass).toString();
+            data['newpwd']=this.editPasswordForm.newPass;//CryptoJS.SHA256(this.editPasswordForm.newPass).toString();
+            util.ajax({
+                method:'POST',
+                action:'userupdate',
+                json:data
+            }).then(res => {
+                this.$Message.info('修改成功');
+                this.editPasswordModal = false;
+                this.$store.commit('logout', this);
+                this.$store.commit('clearOpenedSubmenu');
+                localStorage.clear();
+                this.$router.push({
+                    name: 'login'
+                });
+            }).catch(err => {
+                this.$Message.error(err);
             });
         },
         init () {
-            this.userForm.name = 'Lison';
-            this.userForm.cellphone = '17712345678';
-            this.initPhone = '17712345678';
-            this.userForm.company = 'TalkingData';
-            this.userForm.department = '可视化部门';
+            util.ajax({
+                method:'POST',
+                action:'userinfo',
+                json:{}
+            }).then(res => {
+                this.userForm = res;
+            }).catch(err => {
+                this.$Message.error(err);
+            });
         },
         cancelInputCodeBox () {
             this.inputCodeVisible = false;
@@ -280,13 +297,6 @@ export default {
             this.phoneHasChanged = true;
             this.hasGetIdentifyCode = false;
             this.identifyCodeRight = false;
-        },
-        saveInfoAjax () {
-            this.save_loading = true;
-            setTimeout(() => {
-                this.$Message.success('保存成功');
-                this.save_loading = false;
-            }, 1000);
         }
     },
     mounted () {

@@ -154,6 +154,7 @@ export default {
                 this.$Message.error(err);
             });
         },portsearch(page) {
+            this.search['page']=page;
             util.ajax({
                 method:'POST',
                 action:'portsearch',

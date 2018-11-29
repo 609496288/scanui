@@ -268,6 +268,7 @@ html,body{
                                 </a>
                                 <DropdownMenu slot="list">
                                     <DropdownItem name="project">项目选择</DropdownItem>
+                                    <DropdownItem name="ownSpace">个人中心</DropdownItem>
                                     <DropdownItem name="loginout">退出登录</DropdownItem>
                                 </DropdownMenu>
                             </Dropdown>
@@ -370,6 +371,11 @@ html,body{
                     localStorage.clear();
                     this.$router.push({
                         name: 'login'
+                    });
+                }else if (name === 'ownSpace') {
+                    util.openNewPage(this, 'ownspace_index');
+                    this.$router.push({
+                        name: 'ownspace_index'
                     });
                 }
             },

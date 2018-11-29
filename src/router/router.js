@@ -47,7 +47,12 @@ export const otherRouter = {
         title: '站内信', 
         name: 'message_index', 
         component: resolve => {require(['@/views/main-components/message.vue'], resolve); } 
-    },]
+    },{ 
+        path: 'ownspace', 
+        title: '个人中心', 
+        name: 'ownspace_index', 
+        component: resolve => { require(['@/views/own-space.vue'], resolve); } 
+    }]
 };
 
 // 作为Main组件的子页面展示并且在左侧菜单显示的路由写在appRouter里

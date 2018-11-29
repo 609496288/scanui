@@ -36,7 +36,7 @@
         <div style="margin: 10px;overflow: hidden">
 		<div style="float: left;">共 {{total}} 条</div>
             <div style="float: right;">
-                <Page show-elevator :current="current" :total="total" :page-size=30 @on-change="scantasksearch"></Page>
+                <Page show-elevator :current="current" :total="total" :page-size=50 @on-change="scantasksearch"></Page>
             </div>
         </div>
         <Modal

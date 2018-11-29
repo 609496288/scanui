@@ -62,7 +62,7 @@
                 <Select v-model="userinfo.department" :label="mentname"
                     filterable remote :remote-method="mentsearch">
                     <Option v-for="item in mentlist" 
-                    :value="item.bid" :key="item.name">{{item.name}}</Option>
+                    :value="item.bid" :key="item.bid">{{item.name}}</Option>
                 <Button long icon="plus" @click="modalinfo=false;modalment=true">新增部门</Button>
                 </Select>
                 </FormItem>
