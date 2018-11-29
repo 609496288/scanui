@@ -312,7 +312,7 @@ export default {
             this.$store.commit('removeTag', name);
             this.$store.commit('closePage', name);
             pageOpenedList = this.$store.state.app.pageOpenedList;
-            localStorage.pageOpenedList = JSON.stringify(pageOpenedList);
+            sessionStorage.pageOpenedList = JSON.stringify(pageOpenedList);
             if (this.currentPageName === name) {
                 this.linkTo(lastPageObj);
             }

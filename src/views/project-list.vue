@@ -105,14 +105,14 @@ export default {
                 project_name:'',
                 project_desc:'',
             },
-            projectid:localStorage.projectid,
+            projectid:sessionStorage.projectid,
             selectlist:[],
             projectdata:[],
         };
     },
     methods :{
         downloadreport(pid){
-            window.open("./report.php?pid="+pid+'&tid='+localStorage.token);
+            window.open("./report.php?pid="+pid+'&tid='+sessionStorage.token);
         },
         viewreport(projectid){
             this.$router.push({
@@ -127,8 +127,8 @@ export default {
                 action:'projectselect',
                 json:{'projectid':projectid}
             }).then(res => {
-                localStorage.projectid = res.projectid;
-                localStorage.projectname = res.projectname;
+                sessionStorage.projectid = res.projectid;
+                sessionStorage.projectname = res.projectname;
                 this.$Message.info('确定选择该系统');
                 this.$router.push({
                     name: 'task_list',
@@ -151,8 +151,8 @@ export default {
                 action:'projectselect',
                 json:{'projectid':projectid}
             }).then(res => {
-                localStorage.projectid = res.projectid;
-                localStorage.projectname = res.projectname;
+                sessionStorage.projectid = res.projectid;
+                sessionStorage.projectname = res.projectname;
                 this.$Message.info('确定选择该系统');
                 this.$router.push({
                     name: 'bug_edit'
@@ -168,8 +168,8 @@ export default {
                 action:'projectselect',
                 json:{'projectid':projectid}
             }).then(res => {
-                localStorage.projectid = res.projectid;
-                localStorage.projectname = res.projectname;
+                sessionStorage.projectid = res.projectid;
+                sessionStorage.projectname = res.projectname;
                 this.$Message.info('确定选择该系统');
                 this.$router.push({
                     name: 'port_list',
@@ -197,8 +197,8 @@ export default {
                 action:'projectselect',
                 json:{'projectid':projectid}
             }).then(res => {
-                localStorage.projectid = res.projectid;
-                localStorage.projectname = res.projectname;
+                sessionStorage.projectid = res.projectid;
+                sessionStorage.projectname = res.projectname;
                 this.$Message.info('确定选择该系统');
             }).catch(err => {
                 this.$Message.error(err);

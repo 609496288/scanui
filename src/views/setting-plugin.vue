@@ -90,7 +90,7 @@ export default {
                                             params: {
                                                 isadd:true,
                                                 taskinfo:{
-                                                    task_host: localStorage.projectid ,
+                                                    task_host: sessionStorage.projectid ,
                                                     task_args: '-plug='+params.row.plugname ,
                                                     task_name:["pluginscan"],
                                                 }
@@ -153,7 +153,7 @@ export default {
         },
     },
     created () {
-        if(localStorage.projectid != 'null' && localStorage.projectid != undefined){
+        if(sessionStorage.projectid != 'null' && sessionStorage.projectid != undefined){
             this.pluginsearch(1);
         }else{
             this.$Message.error('请先选择当前系统'); 

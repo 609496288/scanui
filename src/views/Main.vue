@@ -330,7 +330,7 @@ html,body{
                 return this.$store.state.app.currentPath;  // 当前面包屑数组
             },
             avatorPath () {
-                return localStorage.avatorImgPath;
+                return sessionStorage.avatorImgPath;
             },
             cachePage () {
                 return this.$store.state.app.cachePage;
@@ -349,7 +349,7 @@ html,body{
                 if (pathArr.length >= 2) {
                     this.$store.commit('addOpenSubmenu', pathArr[1].name);
                 }
-                this.userName = Cookies.get('user');
+                this.userName = sessionStorage.getItem('user');
                 let messageCount = 0;
                 this.messageCount = messageCount.toString();
                 this.checkTag(this.$route.name);
@@ -368,7 +368,7 @@ html,body{
                     // 退出登录
                     this.$store.commit('logout', this);
                     this.$store.commit('clearOpenedSubmenu');
-                    localStorage.clear();
+                    sessionStorage.clear();
                     this.$router.push({
                         name: 'login'
                     });
@@ -412,7 +412,7 @@ html,body{
                     this.$store.commit('addOpenSubmenu', pathArr[1].name);
                 }
                 this.checkTag(to.name);
-                localStorage.currentPageName = to.name;
+                sessionStorage.currentPageName = to.name;
             },
             lang () {
                 util.setCurrentPath(this, this.$route.name);  // 在切换语言时用于刷新面包屑

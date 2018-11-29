@@ -38,7 +38,7 @@ const app = {
             state.tagsList.push(...list);
         },
         updateMenulist (state) {
-            let accessCode = parseInt(Cookies.get('access'));
+            let accessCode = parseInt(sessionStorage.getItem('access'));
             let menuList = [];
             appRouter.forEach((item, index) => {
                 if (item.access !== undefined) {
@@ -110,8 +110,8 @@ const app = {
             });
         },
         initCachepage (state) {
-            if (localStorage.cachePage) {
-                state.cachePage = JSON.parse(localStorage.cachePage);
+            if (sessionStorage.cachePage) {
+                state.cachePage = JSON.parse(sessionStorage.cachePage);
             }
         },
         removeTag (state, name) {
@@ -130,12 +130,12 @@ const app = {
                 openedPage.query = get.query;
             }
             state.pageOpenedList.splice(get.index, 1, openedPage);
-            localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList);
+            sessionStorage.pageOpenedList = JSON.stringify(state.pageOpenedList);
         },
         clearAllTags (state) {
             state.pageOpenedList.splice(1);
             state.cachePage.length = 0;
-            localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList);
+            sessionStorage.pageOpenedList = JSON.stringify(state.pageOpenedList);
         },
         clearOtherTags (state, vm) {
             let currentName = vm.$route.name;
@@ -155,10 +155,10 @@ const app = {
                 return item === currentName;
             });
             state.cachePage = newCachepage;
-            localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList);
+            sessionStorage.pageOpenedList = JSON.stringify(state.pageOpenedList);
         },
         setOpenedList (state) {
-            state.pageOpenedList = localStorage.pageOpenedList ? JSON.parse(localStorage.pageOpenedList) : [otherRouter.children[0]];
+            state.pageOpenedList = sessionStorage.pageOpenedList ? JSON.parse(sessionStorage.pageOpenedList) : [otherRouter.children[0]];
         },
         setCurrentPath (state, pathArr) {
             state.currentPath = pathArr;
@@ -167,7 +167,7 @@ const app = {
             state.currentPageName = name;
         },
         setAvator (state, path) {
-            localStorage.avatorImgPath = path;
+            sessionStorage.avatorImgPath = path;
         },
         switchLang (state, lang) {
             state.lang = lang;
@@ -182,10 +182,10 @@ const app = {
         increateTag (state, tagObj) {
             if (!Util.oneOf(tagObj.name, state.dontCache)) {
                 state.cachePage.push(tagObj.name);
-                localStorage.cachePage = JSON.stringify(state.cachePage);
+                sessionStorage.cachePage = JSON.stringify(state.cachePage);
             }
             state.pageOpenedList.push(tagObj);
-            localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList);
+            sessionStorage.pageOpenedList = JSON.stringify(state.pageOpenedList);
         }
     }
 };

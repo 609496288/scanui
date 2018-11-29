@@ -39,8 +39,8 @@ export default {
             modalinfo:false,
             current:1,
             total:100,
-            projectname:localStorage.projectname,
-            projectid:localStorage.projectid,
+            projectname:sessionStorage.projectname,
+            projectid:sessionStorage.projectid,
             tasklist:[],
             searchdata:'',
             selectlist:[],
@@ -173,7 +173,7 @@ export default {
         if(this.$route.params.isadd){
             return this.modalinfo = true;
         }
-        if(localStorage.projectid != 'null' && localStorage.projectid != undefined){
+        if(sessionStorage.projectid != 'null' && sessionStorage.projectid != undefined){
             this.bugsearch(1);
         }else{
             this.$Message.error('请先选择当前系统'); 

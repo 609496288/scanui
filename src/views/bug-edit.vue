@@ -229,8 +229,8 @@ export default {
             projectdata: [],
             vulnerabledata:[],
             buginfo:{
-                projectid: localStorage.projectid,
-                projectname: localStorage.projectname,
+                projectid: sessionStorage.projectid,
+                projectname: sessionStorage.projectname,
                 bugid:'',
                 bugaddr:'',
                 bugreq:'',

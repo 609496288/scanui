@@ -45,7 +45,7 @@ setInterval(function(){
         action:'heartbeat',
         json  :{}
     }).then(res => {
-        localStorage.token = res.token;
+        sessionStorage.token = res.token;
         //msg ... 
     }).catch(err => {
         this.$Message.error(err);

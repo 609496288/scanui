@@ -146,8 +146,8 @@ export default {
         return {
             modalinfo: false,
             scaninfo: false,
-            projectname:localStorage.projectname,
-            projectid:localStorage.projectid,
+            projectname:sessionStorage.projectname,
+            projectid:sessionStorage.projectid,
             current:1,
             total:100,
             searchdata:'',
@@ -248,7 +248,7 @@ export default {
                                 props: {
                                     type: 'info',
                                     size: 'large',
-                                    value: params.row.taskid == localStorage.taskid,
+                                    value: params.row.taskid == sessionStorage.taskid,
                                 },
                                 on: {
                                     'on-change': () => {
@@ -352,13 +352,13 @@ export default {
             });
         },
         selecttask(taskid){
-            localStorage.taskid = taskid;
+            sessionStorage.taskid = taskid;
             util.ajax({
                 method:'POST',
                 action:'scantaskselect',
                 json:{'taskid':taskid}
             }).then(res => {
-                localStorage.taskid = res.taskid;
+                sessionStorage.taskid = res.taskid;
                 this.$Message.info('确定选择该任务');
             }).catch(err => {
                 this.$Message.error(err);
@@ -380,7 +380,7 @@ export default {
     },
     created () {
         this.tasktypeget();
-        if(localStorage.projectid != 'null' && localStorage.projectid != undefined){
+        if(sessionStorage.projectid != 'null' && sessionStorage.projectid != undefined){
             this.scantasksearch(1);
         }else{
             this.$Message.error('请先选择当前系统'); 

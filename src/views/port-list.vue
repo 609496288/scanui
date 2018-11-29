@@ -124,8 +124,8 @@ export default {
             total:100,
             modalinfo: false,
             modalimhost:false,
-            projectname:localStorage.projectname,
-            projectid:localStorage.projectid,
+            projectname:sessionStorage.projectname,
+            projectid:sessionStorage.projectid,
             searchdata:'',
             addinfo: {
                 hostip  :'',
@@ -285,7 +285,7 @@ export default {
         if(this.$route.params.isadd){
             return this.modalinfo = true;
         }
-        if(localStorage.projectid != 'null' && localStorage.projectid != undefined){
+        if(sessionStorage.projectid != 'null' && sessionStorage.projectid != undefined){
             this.hostsearch(1);
         }else{
             this.$Message.error('请先选择当前系统'); 

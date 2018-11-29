@@ -42,13 +42,13 @@ function now(){
     return (new Date()).valueOf().toString(16).split("").reverse().join("");
 };
 function hash1(s){
-    var t = (localStorage.token || md5(localStorage.token).toString());
+    var t = (sessionStorage.token || md5(sessionStorage.token).toString());
     var s = sign(s);
     var d = xor(s,t);
     return d;
 };
 function hash(s){
-    return sign(s) + (localStorage.token || md5(localStorage.token).toString());
+    return sign(s) + (sessionStorage.token || md5(sessionStorage.token).toString());
 };
 let util = {};
 util.ajax = function(options) {

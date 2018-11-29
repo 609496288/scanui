@@ -69,8 +69,8 @@ export default {
         return {
             current:1,
             total:100,
-            projectname:localStorage.projectname,
-            projectid:localStorage.projectid,
+            projectname:sessionStorage.projectname,
+            projectid:sessionStorage.projectid,
             mentlist:[],
             userlist:[],
             servicelist:[],

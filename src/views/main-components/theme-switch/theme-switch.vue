@@ -82,9 +82,9 @@ export default {
             }
             let path = '';
             let themeLink = document.querySelector('link[name="theme"]');
-            let userName = Cookies.get('user');
-            if (localStorage.theme) {
-                let themeList = JSON.parse(localStorage.theme);
+            let userName = sessionStorage.getItem('user');
+            if (sessionStorage.theme) {
+                let themeList = JSON.parse(sessionStorage.theme);
                 let index = 0;
                 let hasThisUser = themeList.some((item, i) => {
                     if (item.userName === userName) {
@@ -104,9 +104,9 @@ export default {
                         menuTheme: menuTheme
                     });
                 }
-                localStorage.theme = JSON.stringify(themeList);
+                sessionStorage.theme = JSON.stringify(themeList);
             } else {
-                localStorage.theme = JSON.stringify([{
+                sessionStorage.theme = JSON.stringify([{
                     userName: userName,
                     mainTheme: mainTheme,
                     menuTheme: menuTheme
@@ -133,9 +133,9 @@ export default {
         } else {
             path = 'dist/';
         }
-        let name = Cookies.get('user');
-        if (localStorage.theme) {
-            let hasThisUser = JSON.parse(localStorage.theme).some(item => {
+        let name = sessionStorage.getItem('user');
+        if (sessionStorage.theme) {
+            let hasThisUser = JSON.parse(sessionStorage.theme).some(item => {
                 if (item.userName === name) {
                     this.$store.commit('changeMenuTheme', item.menuTheme);
                     this.$store.commit('changeMainTheme', item.mainTheme);

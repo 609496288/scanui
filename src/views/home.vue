@@ -157,7 +157,7 @@ export default {
     },
     computed: {
         avatorPath () {
-            return localStorage.avatorImgPath;
+            return sessionStorage.avatorImgPath;
         }
     },
     methods: {
