@@ -290,6 +290,11 @@ html,body{
     </div>
 </template>
 <script>
+//!/usr/bin/env nodejs
+// encoding=utf-8
+//codeby     道长且阻
+//email      ydhcui@suliu.net/QQ664284092
+//https://github.com/ydhcui/scanui
     import shrinkableMenu from './main-components/shrinkable-menu/shrinkable-menu.vue';
     import tagsPageOpened from './main-components/tags-page-opened.vue';
     import breadcrumbNav from './main-components/breadcrumb-nav.vue';

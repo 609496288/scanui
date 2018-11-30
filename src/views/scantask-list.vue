@@ -51,7 +51,7 @@
                      <FormItem label="扫描目标">
                             <Input 
                                 v-model="taskinfo.task_host"
-                                :rows="4"
+                                :rows="6"
                                 type="textarea" 
                                 placeholder="一行一个目标网址,IP支持.1/24形式的C段简写">
                             </Input>
@@ -65,6 +65,11 @@
                         </FormItem> 
                     </TabPane>
                     <TabPane label="选项">
+                        <FormItem label="入库设置">
+                            <Checkbox v-model="taskinfo.isverify">
+                                扫描结果是否经过人工审核再写入数据库
+                            </Checkbox>
+                        </FormItem>
                         <FormItem label="任务节点">
 							<Select v-model="taskinfo.task_node" 
                                 multiple clearable filterable remote
@@ -98,11 +103,12 @@
                             placeholder="一行一个目标地址">
                             </Input>
                         </FormItem>
-                        <FormItem label="过滤">
+                        <FormItem label="过滤资产">
                         <Checkbox v-model="taskinfo.isfilter">
                             是否过滤重复资产
                         </Checkbox>
                         </FormItem>
+                        
                     </TabPane>
                 </Tabs>
             </Form>
@@ -111,34 +117,34 @@
             v-model="scaninfo"
             title="任务详情"
             :styles="{top: '30px'}"
+            :scrollable="true"
+            width="800"
             >
             <div>
                 <Button v-if="taskinfoview.taskcode=='finish'" type="primary" click="">重载</Button>
                 <Button v-else-if="taskinfoview.taskcode=='working'" type="error" click="">结束</Button>
                 <Button type="warning" @click="gotaskdiff(taskinfoview.taskid)">任务对比</Button>
             </div>
-            <Row>
-            <Col>
-                <div>
-                    <ul>创建时间 : {{ taskinfoview.createdate}}</ul>
-                    <ul>任务类型 : {{ taskinfoview.tasktype}}</ul>
-                    <ul>任务节点 : {{ taskinfoview.tasknode}}</ul>
-                    <ul>任务名称 : {{ taskinfoview.taskname}}</ul>
-                    <ul>任务主机 : {{ taskinfoview.taskhost}}</ul>
-                    <div>任务参数 : {{ taskinfoview.taskargs}}</div>
-                    <div>任务状态 : {{ taskinfoview.taskcode}}</div>
-                    <ul>任务进程 : {{ taskinfoview.taskpid}}</ul>
-                    <ul>任务等级 : {{ taskinfoview.tasklevel}}</ul>
-                    <ul>任务备注 : {{ taskinfoview.tasknote}}</ul>
-                    <ul>结束时间 : {{ taskinfoview.finishdate}}</ul>
-                    <ul>任务标识 : {{ taskinfoview.taskid}}</ul>
-                </div>
-            </Col>
+            <Row><Col :lg="10">
+                <ul>任务标识 : {{ taskinfoview.taskid}}</ul>
+                <ul>创建时间 : {{ taskinfoview.createdate}}</ul>
+                <ul>结束时间 : {{ taskinfoview.finishdate}}</ul>
+                <ul>任务节点 : {{ taskinfoview.tasknode}}</ul>
+                <ul>任务进程 : {{ taskinfoview.taskpid}}</ul>
+                <ul>任务等级 : {{ taskinfoview.tasklevel}}</ul>
+            </Col><Col :lg="14">
+                <ul>任务类型 : {{ taskinfoview.tasktype}}</ul>
+                <ul>任务名称 : {{ taskinfoview.taskname}}</ul>
+                <ul>任务主机 : {{ taskinfoview.taskhost}}</ul>
+                <div>任务参数 : {{ taskinfoview.taskargs}}</div>
+                <div>任务状态 : {{ taskinfoview.taskcode}}</div>
+                <ul>任务备注 : {{ taskinfoview.tasknote}}</ul>
+                </Col>
             </Row>
             <Card dis-hover v-if="taskinfoview.buglist.length > 0">
                 <p slot="title">
                     <Icon type="ios-list"></Icon>
-                    扫描结果
+                    扫描漏洞结果
                 </p>
                 <div style="height: 250px;overflow-y:hidden;overflow-x: hidden;">
                     <ul id="todoList" class="iview-admin-draggable-list">
@@ -148,15 +154,28 @@
                     </ul>
                 </div>
             </Card>
+            <Table stripe border  size="small" if="taskinfoview.hostlist.length > 0"
+                    ref="selectionhost" 
+                    :columns="hostcol" 
+                    :data="taskinfoview.hostlist" >
+            </Table>
         </Modal>
     </div>
 </template>
 
 <script>
+//!/usr/bin/env nodejs
+// encoding=utf-8
+//codeby     道长且阻
+//email      ydhcui@suliu.net/QQ664284092
+//https://github.com/ydhcui/scanui
 import util from '@/libs/util.js';
-
+import canEditTable from './components/canEditTable';
 export default {
     name: 'task-table',
+    components: {
+        canEditTable
+    },
     data () {
         return {
             modalinfo: false,
@@ -166,7 +185,7 @@ export default {
             current:1,
             total:100,
             searchdata:'',
-            taskinfoview:{buglist:[]},
+            taskinfoview:{buglist:[],hostlist:[]},
             tasklist:[],
             tasktype:[],
             tasknode:[],
@@ -178,6 +197,7 @@ export default {
                 task_args:'',
                 task_node:[],
                 isfilter:false,
+                isverify:true,
                 block:'',
             },
             taskdata: [/*{
@@ -277,6 +297,50 @@ export default {
                     }
                 }
             ],
+            hostcol: [{
+                    title: '地址',
+                    align: 'center',
+                    key: 'hostip',
+                    width: 140,
+                    sortable: true,
+                },{
+                    title: '端口',
+                    align: 'center',
+                    key: 'port',
+                    width: 80,
+                    sortable: true,
+                    editable: true,
+                },{
+                    title: '服务',
+                    align: 'center',
+                    key: 'service',
+                    width: 120,
+                    editable: true,
+                },{
+                    title: '版本',
+                    align: 'center',
+                    key: 'softver',
+                    editable: true,
+                },{
+                    title: '操作',
+                    align: 'center',
+                    width: 100,
+                    key: 'action',
+                    render: (h, params) => {
+                        return h('div', [
+                            h('Button', {
+                                props: {
+                                    type: 'info',
+                                },
+                                on: {
+                                    click: () => {
+                                        this.taskinfoferify(params.row.host_id);
+                                    },
+                                }
+                            },'入库'),
+                    ])}
+                }
+            ],
             showCurrentTableData: true,
         };
     },
@@ -357,7 +421,7 @@ export default {
             })
             args['block'] = this.taskinfo.block.replace(/^\s+|\s+$/g,"").split('\n');
             args['isfilter'] = this.taskinfo.isfilter;
-            console.log(args);
+            args['isverify'] = this.taskinfo.isverify;
             util.ajax({
                 method:'POST',
                 action:'scantaskadd',
@@ -400,6 +464,16 @@ export default {
             this.$router.push({
                 name: 'task_diff',
                 query: {tidb:taskid}
+            });
+        },taskinfoferify(hostid){
+            util.ajax({
+                method:'POST',
+                action:'taskinfoferify',
+                json:{'hostids':hostid}
+            }).then(res => {
+                this.$Message.info('审核成功');
+            }).catch(err => {
+                this.$Message.error(err);
             });
         }
     },

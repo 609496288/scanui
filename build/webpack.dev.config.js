@@ -1,3 +1,9 @@
+//!/usr/bin/env nodejs
+// encoding=utf-8
+//codeby     道长且阻
+//email      ydhcui@suliu.net/QQ664284092
+//https://github.com/ydhcui/scanui
+
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');

@@ -44,8 +44,9 @@
         </Card>
 
 
-        <can-edit-table stripe border id="table" 
+        <can-edit-table stripe border
             ref="selection1" 
+            refs="selection1"
             :columns-list="hostcol" 
             v-model="hostdata"
             @on-delete="portfinish"
@@ -62,6 +63,11 @@
 </template>
 
 <script>
+//!/usr/bin/env nodejs
+// encoding=utf-8
+//codeby     道长且阻
+//email      ydhcui@suliu.net/QQ664284092
+//https://github.com/ydhcui/scanui
 import util from '@/libs/util.js';
 import canEditTable from './components/canEditTable';
 
@@ -200,7 +206,7 @@ export default {
             });
         },
         exportData(){
-            this.$refs.selection1.exportCsv({
+            this.$refs.selection1.$refs.selection1.exportCsv({
                 filename: this.searchdata,
             });
         },

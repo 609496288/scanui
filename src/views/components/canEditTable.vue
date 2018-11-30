@@ -10,12 +10,19 @@
 
 <template>
     <div>
-        <Table stripe border size="small" :ref="refs" :columns="columnsList" :data="thisTableData" ></Table>
+        <Table stripe border size="small" 
+            :ref="refs" 
+            :columns="columnsList" 
+            :data="thisTableData"></Table>
     </div>
 </template>
 
 <script>
-
+//!/usr/bin/env nodejs
+// encoding=utf-8
+//codeby     道长且阻
+//email      ydhcui@suliu.net/QQ664284092
+//https://github.com/ydhcui/scanui
 const editButton = (vm, h, currentRow, index) => {
     return h('i-button', {
         props: {

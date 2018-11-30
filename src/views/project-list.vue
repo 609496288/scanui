@@ -85,7 +85,12 @@
     </div>
 </template>
 
-<script> 
+<script>
+//!/usr/bin/env nodejs
+// encoding=utf-8
+//codeby     道长且阻
+//email      ydhcui@suliu.net/QQ664284092
+//https://github.com/ydhcui/scanui 
 import VulRank from './components/vulrank.vue';
 import inforCard from './components/inforCard.vue';
 import util from '@/libs/util.js';

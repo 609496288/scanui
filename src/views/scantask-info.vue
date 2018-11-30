@@ -34,8 +34,9 @@
             :data="taskdata" >
         </Table>
         <div style="margin: 10px;overflow: hidden">
+		<div style="float: left;">共 {{total}} 条</div>
             <div style="float: right;">
-                <Page show-elevator :current="current" :total="total" :page-size=30 @on-change="scantasksearch"></Page>
+                <Page show-elevator :current="current" :total="total" :page-size=50 @on-change="scantasksearch"></Page>
             </div>
         </div>
         <Modal
@@ -50,7 +51,7 @@
                      <FormItem label="扫描目标">
                             <Input 
                                 v-model="taskinfo.task_host"
-                                :rows="5"
+                                :rows="6"
                                 type="textarea" 
                                 placeholder="一行一个目标网址,IP支持.1/24形式的C段简写">
                             </Input>
@@ -64,41 +65,51 @@
                         </FormItem> 
                     </TabPane>
                     <TabPane label="选项">
-                        <FormItem label="任务等级">
+                        <FormItem label="任务节点">
+							<Select v-model="taskinfo.task_node" 
+                                multiple clearable filterable remote
+                                :remote-method="tasknodeget">
+                                <Option v-for="item in tasknode" 
+                                    :value="item.nodeid" 
+                                    :key="item.nodeid">{{ item.nodeid }}</Option>
+                            </Select>
+                        </FormItem><FormItem label="任务等级">
                             <Select v-model="taskinfo.task_level">
                                 <Option value="0">立刻</Option>
                                 <Option value="1">紧急</Option>
                                 <Option value="2">优先</Option>
                                 <Option value="3">一般</Option>
                             </Select>
-                        </FormItem>
-                        <FormItem label="任务参数">
+                        </FormItem><FormItem label="任务参数">
                             <Input type="text" 
                             v-model="taskinfo.task_args"
                             placeholder="-key1=value -key2=value"></Input>
-                        </FormItem> 
-                        <FormItem label="任务备注">
+                        </FormItem>
+                        <FormItem label="自动入库">
+                        <Checkbox v-model="taskinfo.isverify">
+                            扫描结果是否经过人工审核再写入数据库
+                        </Checkbox>
+                        </FormItem>
+						<FormItem label="任务备注">
                             <Input type="text" v-model="taskinfo.task_note"></Input>
                         </FormItem> 
                     </TabPane>
-                    <!--<TabPane label="上传">
-                        <div class="margin-top-10">
-                            <Card>
-                                <div class="height-200px">
-                                    <Upload
-                                        multiple
-                                        type="drag"
-                                        action="/upload.php"
-                                        :on-success="uploadsuccess">
-                                        <div style="padding: 60px 0;height: 200px;">
-                                            <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
-                                            <p>上传文件</p>
-                                        </div>
-                                    </Upload>
-                                </div>
-                            </Card>
-                        </div>
-                    </TabPane>-->
+                    <TabPane label="黑名单">
+                        <FormItem label="黑名单">
+                            <Input 
+                            v-model="taskinfo.block"
+                            :rows="6"
+                            type="textarea" 
+                            placeholder="一行一个目标地址">
+                            </Input>
+                        </FormItem>
+                        <FormItem label="过滤资产">
+                        <Checkbox v-model="taskinfo.isfilter">
+                            是否过滤重复资产
+                        </Checkbox>
+                        </FormItem>
+                        
+                    </TabPane>
                 </Tabs>
             </Form>
         </Modal>
@@ -113,23 +124,20 @@
                 <Button type="warning" @click="gotaskdiff(taskinfoview.taskid)">任务对比</Button>
             </div>
             <Row>
-            <Col span="14">
+            <Col>
                 <div>
                     <ul>创建时间 : {{ taskinfoview.createdate}}</ul>
-                    <ul>结束时间 : {{ taskinfoview.finishdate}}</ul>
-                    <ul>任务标识 : {{ taskinfoview.taskid}}</ul>
+                    <ul>任务类型 : {{ taskinfoview.tasktype}}</ul>
+                    <ul>任务节点 : {{ taskinfoview.tasknode}}</ul>
+                    <ul>任务名称 : {{ taskinfoview.taskname}}</ul>
                     <ul>任务主机 : {{ taskinfoview.taskhost}}</ul>
-                    <ul>任务状态 : {{ taskinfoview.taskcode}}</ul>
-                </div>
-            </Col>
-            <Col span="10">
-                 <div>
-                    <ul>任务参数 : {{ taskinfoview.taskargs}}</ul>
-                    <ul>任务备注 : {{ taskinfoview.tasknote}}</ul>
+                    <div>任务参数 : {{ taskinfoview.taskargs}}</div>
+                    <div>任务状态 : {{ taskinfoview.taskcode}}</div>
                     <ul>任务进程 : {{ taskinfoview.taskpid}}</ul>
                     <ul>任务等级 : {{ taskinfoview.tasklevel}}</ul>
-                    <ul>任务名称 : {{ taskinfoview.taskname}}</ul>
-                    <ul>任务类型 : {{ taskinfoview.tasktype}}</ul>
+                    <ul>任务备注 : {{ taskinfoview.tasknote}}</ul>
+                    <ul>结束时间 : {{ taskinfoview.finishdate}}</ul>
+                    <ul>任务标识 : {{ taskinfoview.taskid}}</ul>
                 </div>
             </Col>
             </Row>
@@ -138,7 +146,7 @@
                     <Icon type="ios-list"></Icon>
                     扫描结果
                 </p>
-                <div style="height: 300px;overflow-y:hidden;overflow-x: hidden;">
+                <div style="height: 250px;overflow-y:hidden;overflow-x: hidden;">
                     <ul id="todoList" class="iview-admin-draggable-list">
                         <a v-for="item in taskinfoview.buglist" :href="'/#/buginfo?id='+item.bugid">
                         <li class="notwrap todolist-item">【{{item.bugrank}}】{{item.bugname }}</li>
@@ -172,12 +180,17 @@ export default {
             taskinfoview:{buglist:[]},
             tasklist:[],
             tasktype:[],
+            tasknode:[],
             taskinfo: {
                 task_host:'',
                 task_note:'',
                 task_level:'3',
                 task_name:'',
                 task_args:'',
+                task_node:[],
+                isfilter:false,
+                isverify:true,
+                block:'',
             },
             taskdata: [/*{
                 task_id:'',
@@ -200,16 +213,14 @@ export default {
                     render: (h, params) => {
                         const code = params.row.task_code;
                         const text = code === 'waiting' ? '等待运行' 
-                                   : code === 'queueing' ? '排队中' 
+                                   : code === 'PENDING' ? '队列中' 
                                    : code === 'working' ? '运行中' 
                                    : code === 'finish' ? '已完成' 
-                                   : code === 'pause' ? '已暂停'
-                                   : '出错了';
-                        const color = code === 'waiting' ? 'green' 
-                                   : code === 'queueing' ? 'green' 
-                                   : code === 'working' ? 'green' 
+                                   : code;
+                        const color= code === 'waiting' ? 'default' 
+                                   : code === 'PENDING' ? 'green' 
+                                   : code === 'working' ? 'yellow' 
                                    : code === 'finish' ? 'blue' 
-                                   : code === 'pause' ? 'yellow'
                                    : 'red';
                         return h('Tag', {
                             props: {
@@ -305,6 +316,17 @@ export default {
                 this.$Message.error(err);
             }); 
         },
+        tasknodeget(keyword){
+            util.ajax({
+                method:'POST',
+                action:'tasknodeget',
+                json:{'keyword':keyword}
+            }).then(res => {
+                this.tasknode = res;
+            }).catch(err => {
+                this.$Message.error(err);
+            }); 
+        },
         scantasksearch (page) {
             util.ajax({
                 method:'POST',
@@ -340,6 +362,14 @@ export default {
             });
         },
         scantaskadd () {
+            let args = {}
+            this.taskinfo.task_args.replace(/^\s+|\s+$/g,"").split(' ').forEach(function(item){
+                var ag = item.split('=');
+                args[ag[0].substr(1)]=ag[1];
+            })
+            args['block'] = this.taskinfo.block.replace(/^\s+|\s+$/g,"").split('\n');
+            args['isfilter'] = this.taskinfo.isfilter;
+            args['isverify'] = this.taskinfo.isverify;
             util.ajax({
                 method:'POST',
                 action:'scantaskadd',
@@ -347,8 +377,9 @@ export default {
                     'task_host':this.taskinfo.task_host,
                     'task_name':[this.taskinfo.task_name],
                     'task_level':this.taskinfo.task_level,
-                    'task_args':this.taskinfo.task_args,
+                    'task_args':args,
                     'task_note':this.taskinfo.task_note,
+                    'task_node':this.taskinfo.task_node,
                 }
             }).then(res => {
                 this.$Message.info('添加成功！');

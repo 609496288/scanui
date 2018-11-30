@@ -1,3 +1,9 @@
+//!/usr/bin/env nodejs
+// encoding=utf-8
+//codeby     道长且阻
+//email      ydhcui@suliu.net/QQ664284092
+//https://github.com/ydhcui/scanui
+
 import Main from '@/views/Main.vue';
 
 // 不作为Main组件的子页面展示的页面单独写，如下
@@ -37,6 +43,11 @@ export const otherRouter = {
         title: '项目报表', 
         name: 'project_info', 
         component: resolve => {require(['@/views/project-info.vue'], resolve); } 
+    },{ 
+        path: 'taskinfo', 
+        title: '任务详情', 
+        name: 'task_info', 
+        component: resolve => { require(['@/views/scantask-info.vue'], resolve); } 
     },{ 
         path: 'taskdiff', 
         title: '任务对比', 

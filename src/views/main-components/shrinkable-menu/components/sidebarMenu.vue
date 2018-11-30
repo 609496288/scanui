@@ -3,7 +3,7 @@
 </style>
 
 <template>
-    <Menu ref="sideMenu" width="auto" accordion="true"
+    <Menu ref="sideMenu" width="auto" :accordion="false"
         :active-name="$route.name" 
         :open-names="openNames" 
         :theme="menuTheme"
