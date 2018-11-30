@@ -43,12 +43,14 @@
             </Dropdown>
         </Card>
 
-        <Table stripe border id="table"
-            ref="selection1"
-            :columns="hostcol" 
-            :data="hostdata"
-            >
-        </Table>
+
+        <can-edit-table stripe border id="table" 
+            ref="selection1" 
+            :columns-list="hostcol" 
+            v-model="hostdata"
+            @on-delete="portfinish"
+            @on-change="portedit"
+        ></can-edit-table>
 
         <div style="margin: 10px;overflow: hidden">
             <div style="float: left;">共 {{total}} 条</div>
@@ -61,9 +63,12 @@
 
 <script>
 import util from '@/libs/util.js';
+import canEditTable from './components/canEditTable';
+
 export default {
     name: 'hosts-table',
     components: {
+        canEditTable
     },
     data () {
         return {
@@ -112,11 +117,17 @@ export default {
                     key: 'port',
                     width: 80,
                     sortable: true,
+                    editable: true,
                 },{
                     title: '版本',
                     align: 'center',
                     key: 'softver',
                     editable: true,
+                },{
+                    title: '操作',
+                    width: 146,
+                    key: 'handle',
+                    handle: ['edit','delete']
                 }
             ],
             showCurrentTableData: true
@@ -162,6 +173,28 @@ export default {
             }).then(res => {
                 this.hostdata = res.ret;
                 this.total = res.total;
+            }).catch(err => {
+                this.$Message.error(err);
+            });
+        },portedit(val,index){
+            util.ajax({
+                method:'POST',
+                action:'portedit',
+                json:this.hostdata[index]
+            }).then(res => {
+                this.$Message.info('更新成功！');
+                this.porttemp = val;
+            }).catch(err => {
+                this.$Message.error(err);
+            });
+        },portfinish(val,index){
+            util.ajax({
+                method:'POST',
+                action:'portfinish',
+                json:this.hostdata[index]
+            }).then(res => {
+                this.$Message.info('删除成功！');
+                this.porttemp = val;
             }).catch(err => {
                 this.$Message.error(err);
             });

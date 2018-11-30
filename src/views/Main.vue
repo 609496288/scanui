@@ -239,7 +239,7 @@ html,body{
                 :open-names="openedSubmenuArr"
                 :menu-list="menuList">
                 <div slot="top" class="logo-con" @click="toggleClick">
-                    <img v-show="!shrink"  src="../images/logo.png" key="max-logo" />
+                    <img v-show="!shrink"  :src="logo" key="max-logo" />
                     <img v-show="shrink" src="../images/logo-min.jpg" key="min-logo" />
                 </div>
             </shrinkable-menu>
@@ -340,9 +340,13 @@ html,body{
             },
             mesCount () {
                 return this.$store.state.app.messageCount;
+            },
+            logo(){
+                return localStorage.getItem('logosrc');
             }
         },
         methods: {
+
             init () {
                 let pathArr = util.setCurrentPath(this, this.$route.name);
                 this.$store.commit('updateMenulist');

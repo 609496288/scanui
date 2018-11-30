@@ -154,12 +154,12 @@ export const appRouter = [
         title: '用户管理', 
         name: 'user_list', 
         component: resolve => {require(['@/views/setting-user.vue'], resolve); } 
-    }/*,{
-        path: 'projectlist', 
-        title: '项目管理', 
-        name: 'project_list', 
-        component: resolve => {require(['@/views/setting-project.vue'], resolve); } 
-    }*/]
+    },{
+        path: 'system', 
+        title: '系统设置', 
+        name: 'systemset', 
+        component: resolve => {require(['@/views/setting-system.vue'], resolve); } 
+    }]
 }];
 
 // 所有上面定义的路由都要写在下面的routers里

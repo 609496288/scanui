@@ -89,6 +89,21 @@
                             <Input type="text" v-model="taskinfo.task_note"></Input>
                         </FormItem> 
                     </TabPane>
+                    <TabPane label="黑名单">
+                        <FormItem label="黑名单">
+                            <Input 
+                            v-model="taskinfo.block"
+                            :rows="6"
+                            type="textarea" 
+                            placeholder="一行一个目标地址">
+                            </Input>
+                        </FormItem>
+                        <FormItem label="过滤">
+                        <Checkbox v-model="taskinfo.isfilter">
+                            是否过滤重复资产
+                        </Checkbox>
+                        </FormItem>
+                    </TabPane>
                 </Tabs>
             </Form>
         </Modal>
@@ -162,6 +177,8 @@ export default {
                 task_name:'',
                 task_args:'',
                 task_node:[],
+                isfilter:false,
+                block:'',
             },
             taskdata: [/*{
                 task_id:'',
@@ -333,6 +350,14 @@ export default {
             });
         },
         scantaskadd () {
+            let args = {}
+            this.taskinfo.task_args.replace(/^\s+|\s+$/g,"").split(' ').forEach(function(item){
+                var ag = item.split('=');
+                args[ag[0].substr(1)]=ag[1];
+            })
+            args['block'] = this.taskinfo.block.replace(/^\s+|\s+$/g,"").split('\n');
+            args['isfilter'] = this.taskinfo.isfilter;
+            console.log(args);
             util.ajax({
                 method:'POST',
                 action:'scantaskadd',
@@ -340,7 +365,7 @@ export default {
                     'task_host':this.taskinfo.task_host,
                     'task_name':[this.taskinfo.task_name],
                     'task_level':this.taskinfo.task_level,
-                    'task_args':this.taskinfo.task_args,
+                    'task_args':args,
                     'task_note':this.taskinfo.task_note,
                     'task_node':this.taskinfo.task_node,
                 }

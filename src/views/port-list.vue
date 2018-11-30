@@ -112,6 +112,7 @@
 import util from '@/libs/util.js';
 import tableExpand from './components/tableExpand';
 import canEditTable from './components/canEditTable';
+
 export default {
     name: 'hosts-table',
     components: {
