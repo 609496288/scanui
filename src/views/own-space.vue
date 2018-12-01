@@ -252,7 +252,7 @@ export default {
         userpwd () {
             let data = this.userForm;
             data['oldpwd']=CryptoJS.SHA256(this.editPasswordForm.oldPass).toString();
-            data['newpwd']=this.editPasswordForm.newPass;//CryptoJS.SHA256(this.editPasswordForm.newPass).toString();
+            data['newpwd']=CryptoJS.SHA256(this.editPasswordForm.newPass).toString();
             util.ajax({
                 method:'POST',
                 action:'userupdate',

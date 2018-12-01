@@ -33,6 +33,7 @@
             :columns="taskcol" 
             :data="taskdata" >
         </Table>
+
         <div style="margin: 10px;overflow: hidden">
 		<div style="float: left;">共 {{total}} 条</div>
             <div style="float: right;">
@@ -118,28 +119,28 @@
             title="任务详情"
             :styles="{top: '30px'}"
             :scrollable="true"
-            width="800"
+            width="860"
             >
             <div>
-                <Button v-if="taskinfoview.taskcode=='finish'" type="primary" click="">重载</Button>
+                <Button v-if="taskinfoview.taskcode=='finish'" type="primary" @click="reload(taskinfoview.taskid)">重载</Button>
                 <Button v-else-if="taskinfoview.taskcode=='working'" type="error" click="">结束</Button>
                 <Button type="warning" @click="gotaskdiff(taskinfoview.taskid)">任务对比</Button>
             </div>
             <Row><Col :lg="10">
-                <ul>任务标识 : {{ taskinfoview.taskid}}</ul>
                 <ul>创建时间 : {{ taskinfoview.createdate}}</ul>
-                <ul>结束时间 : {{ taskinfoview.finishdate}}</ul>
-                <ul>任务节点 : {{ taskinfoview.tasknode}}</ul>
+                <ul>结束时间 : {{ taskinfoview.finishdate}}</ul>    
+                <ul>任务状态 : {{ taskinfoview.taskcode}}</ul>
                 <ul>任务进程 : {{ taskinfoview.taskpid}}</ul>
                 <ul>任务等级 : {{ taskinfoview.tasklevel}}</ul>
+                <ul>任务备注 : {{ taskinfoview.tasknote}}</ul>
             </Col><Col :lg="14">
+                <ul>任务标识 : {{ taskinfoview.taskid}}</ul>
                 <ul>任务类型 : {{ taskinfoview.tasktype}}</ul>
                 <ul>任务名称 : {{ taskinfoview.taskname}}</ul>
                 <ul>任务主机 : {{ taskinfoview.taskhost}}</ul>
-                <div>任务参数 : {{ taskinfoview.taskargs}}</div>
-                <div>任务状态 : {{ taskinfoview.taskcode}}</div>
-                <ul>任务备注 : {{ taskinfoview.tasknote}}</ul>
+                <ul>任务节点 : {{ taskinfoview.tasknode}}</ul>
                 </Col>
+            <div>任务参数 : {{ taskinfoview.taskargs}}</div>
             </Row>
             <Card dis-hover v-if="taskinfoview.buglist.length > 0">
                 <p slot="title">
@@ -154,11 +155,12 @@
                     </ul>
                 </div>
             </Card>
-            <Table stripe border  size="small" if="taskinfoview.hostlist.length > 0"
+            <Table stripe border  size="small" v-if="taskinfoview.hostlist.length > 0"
                     ref="selectionhost" 
                     :columns="hostcol" 
                     :data="taskinfoview.hostlist" >
             </Table>
+
         </Modal>
     </div>
 </template>
@@ -210,7 +212,7 @@ export default {
             taskcol: [
                 {
                     type: 'selection',
-                    width: 60,
+                    width: 50,
                     align: 'center'
                 },{
                     title: '任务状态',
@@ -243,6 +245,7 @@ export default {
                 },{
                     title: '任务类型',
                     key: 'task_name',
+                    ellipsis:'true',
                     render: (h, params) => {
                         return h('div',{},
                             params.row.task_name + ' ' + params.row.task_args
@@ -253,7 +256,7 @@ export default {
                     align: 'center',
                     key: 'createdate',
                     sortable: true,
-                    width: 180,
+                    width: 120,
                     render: (h, params) => {
                         return h('span', [
                             h('Icon', {
@@ -298,9 +301,32 @@ export default {
                 }
             ],
             hostcol: [{
+                    title: '状态',
+                    align: 'center',
+                    width: 80,
+                    key: 'status',
+                    sortable: true,
+                    render: (h, params) => {
+                        const code = params.row.status;
+                        const text = code === 'insert' ? '新增' 
+                                   : code === 'update' ? '更新' 
+                                   : code === 'delete' ? '删除' 
+                                   : code;
+                        const color= code === 'insert' ? 'red' 
+                                   : code === 'update' ? 'yellow' 
+                                   : code === 'delete' ? 'default' 
+                                   : 'blue';
+                        return h('Tag', {
+                            props: {
+                                checkable: true,
+                                color: color
+                             }
+                        },text);
+                     },
+                },{
                     title: '地址',
                     align: 'center',
-                    key: 'hostip',
+                    key: 'host',
                     width: 140,
                     sortable: true,
                 },{
@@ -324,17 +350,18 @@ export default {
                 },{
                     title: '操作',
                     align: 'center',
-                    width: 100,
+                    width: 120,
                     key: 'action',
                     render: (h, params) => {
                         return h('div', [
                             h('Button', {
                                 props: {
                                     type: 'info',
+                                    size: 'small'
                                 },
                                 on: {
                                     click: () => {
-                                        this.taskinfoferify(params.row.host_id);
+                                        this.taskinfoferify(params.row.hostid);
                                     },
                                 }
                             },'入库'),
@@ -415,13 +442,13 @@ export default {
         },
         scantaskadd () {
             let args = {}
+            args['block'] = this.taskinfo.block.replace(/^\s+|\s+$/g,"").split('\n');
+            args['isfilter'] = this.taskinfo.isfilter;
+            args['isverify'] = this.taskinfo.isverify;
             this.taskinfo.task_args.replace(/^\s+|\s+$/g,"").split(' ').forEach(function(item){
                 var ag = item.split('=');
                 args[ag[0].substr(1)]=ag[1];
             })
-            args['block'] = this.taskinfo.block.replace(/^\s+|\s+$/g,"").split('\n');
-            args['isfilter'] = this.taskinfo.isfilter;
-            args['isverify'] = this.taskinfo.isverify;
             util.ajax({
                 method:'POST',
                 action:'scantaskadd',
@@ -469,12 +496,39 @@ export default {
             util.ajax({
                 method:'POST',
                 action:'taskinfoferify',
-                json:{'hostids':hostid}
+                json:{'hostids':[hostid]}
             }).then(res => {
                 this.$Message.info('审核成功');
+                for(var d in this.taskinfoview.hostlist){
+                    if(hostid == this.taskinfoview.hostlist[d].hostid){
+                        this.taskinfoview.hostlist.splice(d,1);
+                    }
+                }
             }).catch(err => {
                 this.$Message.error(err);
             });
+        },reload(){
+            this.taskinfo.task_host = this.taskinfoview.taskhost;
+            this.taskinfo.task_name = this.taskinfoview.tasktype;
+            this.taskinfo.task_node = [this.taskinfoview.tasknode];
+            this.taskinfo.task_level = this.taskinfoview.tasklevel;
+            this.taskinfo.task_note = this.taskinfoview.tasknote;
+            let args = JSON.parse(this.taskinfoview.taskargs);
+            let ag = "";
+            for(var k in args){
+                if(k == 'isfilter'){
+                    this.taskinfo.isfilter = args['isfilter'];
+                }else if(k == 'isverify'){
+                    this.taskinfo.isverify = args['isverify'];
+                }else if(k == 'block'){
+                    this.taskinfo.block = args['block'].join('\n');
+                }else{
+                    ag += "-"+k+"="+args[k];
+                }
+            }
+            this.taskinfo.task_args = ag;
+            this.scaninfo = false;
+            this.modalinfo = true;
         }
     },
     created () {
