@@ -60,11 +60,11 @@ let util = {};
 util.ajax = function(options) {
     return new Promise((resolve, reject) => {
         const instance = axios.create({
-            url:'/api.php',
+            url:atob('L2FwaS5waHA='),
             timeout: 66666,
             headers: {
                 'Access-Control-Allow-Credentials':true,
-                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Type': 'application/json',
             },
             data:{}
         });

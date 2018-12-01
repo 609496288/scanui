@@ -218,7 +218,6 @@ export default {
                 this.total = res.total;
             }).catch(err => {
                 this.$Message.error(err);
-                console.log(err);
             });
         },
         hostedit (val, index) {

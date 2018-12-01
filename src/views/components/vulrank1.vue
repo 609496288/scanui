@@ -78,7 +78,6 @@ export default {
                 var d = {};
                 d['name'] = k;
                 d['value'] = this.bugvalue[k];
-                console.log(d);
                 this.bugdata.push(d);
             }
             this.option = {

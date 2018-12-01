@@ -25,8 +25,8 @@ fs.open('./build/env.js', 'w', function(err, fd) {
 module.exports = merge(webpackBaseConfig, {
     output: {
         publicPath: '../static/',  // 修改这部分为你的服务器域名 
-        filename: '[name].[hash].js',
-        chunkFilename: '[name].[hash].chunk.js'
+        filename: '[name].[chunkhash].js',
+        chunkFilename: '[name].[chunkhash].chunk.js'
     },
     plugins: [
         new cleanWebpackPlugin(['./dist/static/*'], {
@@ -77,7 +77,7 @@ module.exports = merge(webpackBaseConfig, {
         new HtmlWebpackPlugin({
             title: '漏洞管理平台' + package.version,
             favicon: './icon.ico',
-            filename: '../index.html',
+            filename: '../template/index.html',
             template: './src/template/index.ejs',
             inject: false
         })

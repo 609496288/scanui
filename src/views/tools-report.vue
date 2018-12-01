@@ -112,7 +112,6 @@ export default {
     methods: {
         uploadsuccess(res, file){
             for(var i=0;i<res.result.length;i++){
-                console.log(res.result[i]);
                 this.bugimport(res.result[i].fid);
                 this.filedata.push(res.result[i]);
             }

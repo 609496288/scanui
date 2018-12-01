@@ -84,7 +84,6 @@ export default {
                             }};
 
                 d['labelLine'] = {'show':false};
-                console.log(d);
                 this.bugdata.push(d);
             }
             this.option = {

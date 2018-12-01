@@ -199,7 +199,7 @@ export default {
                 task_args:'',
                 task_node:[],
                 isfilter:false,
-                isverify:true,
+                isverify:false,
                 block:'',
             },
             taskdata: [/*{
@@ -361,10 +361,21 @@ export default {
                                 },
                                 on: {
                                     click: () => {
-                                        this.taskinfoferify(params.row.hostid);
+                                        this.taskinfoverify(params.row.hostid);
                                     },
                                 }
                             },'入库'),
+                            h('Button', {
+                                props: {
+                                    type: 'error',
+                                    size: 'small'
+                                },
+                                on: {
+                                    click: () => {
+                                        this.taskinfofinish(params.row.hostid);
+                                    },
+                                }
+                            },'删除'),
                     ])}
                 }
             ],
@@ -492,10 +503,25 @@ export default {
                 name: 'task_diff',
                 query: {tidb:taskid}
             });
-        },taskinfoferify(hostid){
+        },taskinfoverify(hostid){
             util.ajax({
                 method:'POST',
                 action:'taskinfoferify',
+                json:{'hostids':[hostid]}
+            }).then(res => {
+                this.$Message.info('审核成功');
+                for(var d in this.taskinfoview.hostlist){
+                    if(hostid == this.taskinfoview.hostlist[d].hostid){
+                        this.taskinfoview.hostlist.splice(d,1);
+                    }
+                }
+            }).catch(err => {
+                this.$Message.error(err);
+            });
+        },taskinfofinish(hostid){
+            util.ajax({
+                method:'POST',
+                action:'taskinfofinish',
                 json:{'hostids':[hostid]}
             }).then(res => {
                 this.$Message.info('审核成功');
