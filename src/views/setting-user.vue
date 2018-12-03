@@ -59,7 +59,7 @@
                     </Select>
                 </FormItem>
                 <FormItem label="部门">
-                <Select v-model="userinfo.department" :label="mentname"
+                <Select v-model="userinfo.depid" :label="mentname"
                     filterable remote :remote-method="mentsearch">
                     <Option v-for="item in mentlist" 
                     :value="item.bid" :key="item.bid">{{item.name}}</Option>
@@ -111,7 +111,7 @@ export default {
                 password:'',
                 group:'',
                 company:'',
-                department:'',
+                depid:'',
                 realname:'',
                 phone:'',
                 email:''
@@ -123,6 +123,7 @@ export default {
                 group:'',
                 company:'',
                 department:'',
+                depid:'',
                 realname:'',
                 phone:'',
                 email:''
@@ -186,7 +187,7 @@ export default {
                 this.$Message.info('更新成功！');
                 this.modalment=false;
                 this.modalinfo=true;
-                this.userinfo.department = res.bid;
+                this.userinfo.depid = res.bid;
             }).catch(err => {
                 this.$Message.error(err);
             });

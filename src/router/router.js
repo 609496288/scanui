@@ -102,7 +102,7 @@ export const appRouter = [
     access: 2,
     component: Main,
     children: [{
-        path: 'buglist', 
+        path: 'buglist1', 
         title: '正在处理', 
         name: 'bug_list', 
         component: resolve => {require(['@/views/bug-list.vue'], resolve);},
@@ -120,7 +120,7 @@ export const appRouter = [
     access: 2,
     component: Main,
     children: [{
-        path: 'tasklist', 
+        path: 'tasklist1', 
         title: '用户任务', 
         name: 'task_list', 
         component: resolve => {require(['@/views/scantask-list.vue'], resolve);},
